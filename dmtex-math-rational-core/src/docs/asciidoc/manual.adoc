@@ -1,0 +1,93 @@
+= User Manual
+
+== Purpose
+
+The main purpose of _dmtex-math-rational-core_ component is evaluating of rational (fractional) mathematical expressions.
+It supports two types of classes, they are `Rational` based on primitive `long` and `BigRational` based on `BigInteger`.
+
+== Code samples
+
+Evaluation of `Rational` values in Java
+
+[source,java]
+----
+class Sample {
+  public static void main(String[] args) {
+    Rational a = Rational.valueOf(1.5); //<1>
+    Rational b = a.plus(Rational.ONE); //<2>
+    System.out.println(b);
+  }
+}
+----
+<1> Create new instance of `Rational` from `double` value.
+<2> Adds constant to just created instance.
+
+Evaluates in Groovy and Kotlin with overloaded operations:
+
+[source,groovy]
+----
+def a = ONE_FIFTH
+def b = TWO
+def c = valueOf(1.5)
+
+println a + b - c
+println a * b / c
+println b % c
+println a ** 2
+----
+
+[source,kotlin]
+----
+fun main() {
+  val a = ONE_FIFTH
+  val b = TWO
+  val c = valueOf(1.5)
+
+  println(a + b - c)
+  println(a * b / c)
+  println(b % c)
+}
+----
+
+== Formatting
+
+Default formatting uses just ASCII symbols. For instance, `3 4/5` means
+
+[plantuml,num,svg]
+----
+@startlatex
+3\frac{4}{5}
+@endlatex
+----
+
+Formatting can be customized using SPI mechanism (Service Provider Interface).
+For that purpose one can provide own implementation of `NumberFormat` like `RationalFormat` provided with the module.
+
+[plantuml,format,svg]
+----
+class NumberFormat
+class RationalFormat
+NumberFormat <|-- RationalFormat
+----
+
+== SPI
+
+SPI provides interface `RationalServiceProvider` with three methods
+
+[plantuml,spi,svg]
+----
+interface RationalServiceProvider {
+  long rationalPrecision()
+  int maxIterations()
+  NumberFormat numberFormat()
+}
+----
+
+[cols="1,1,1,2"]
+|===
+| Method              | Type         | Default        | Description
+
+| rationalPrecision() | long         | 1000           | Used at converting from `double`
+| maxIterations()     | int          | 32             | To limit time during converting from `double`
+| numberFormat()      | NumberFormat | RationalFormat | User for formatting and parsing of `Rational` values
+|===
